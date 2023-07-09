@@ -36,6 +36,13 @@
                             sorting: {
                                 mode: 'multiple',
                             },
+                            headerFilter: {
+                                visible: true,
+                            },
+                            filterRow: {
+                                visible: true,
+                                applyFilter: 'auto',
+                            },
                             columns: [
                                 {
                                     dataField: 'name',

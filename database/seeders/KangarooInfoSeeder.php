@@ -11,9 +11,12 @@ class KangarooInfoSeeder extends Seeder
 {
     public function run()
     {
+        //adjust the value for the desired number of dummy data
+        $dataCount = 10;
+        
         $oFaker = Faker::create();
         
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < $dataCount; $i++) {
             KangarooInfoModel::create([
                 'name' => $oFaker->unique()->firstName,
                 'nickname' => $oFaker->randomElement([$oFaker->firstName, null]),
