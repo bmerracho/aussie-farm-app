@@ -130,13 +130,13 @@
                         let data = res.data;
 
                         for (let i = 0; i < data.length; i++) {
-                            let row = `<tr>
-                                            <td>${data[i].id}</td>
-                                            <td>${data[i].name}</td>
-                                            <td>${data[i].birthday}</td>
-                                            <td>${data[i].weight}</td>
-                                            <td>${data[i].height}</td>
-                                            <td>${data[i].friendliness ?? ""}</td>
+                            let row = `<tr id="${'tr_' + data[i].id}">
+                                            <td class="td_id">${data[i].id}</td>
+                                            <td class="td_name">${data[i].name}</td>
+                                            <td class="td_birthday">${data[i].birthday}</td>
+                                            <td class="td_weight">${data[i].weight}</td>
+                                            <td class="td_height">${data[i].height}</td>
+                                            <td class="td_friendliness">${data[i].friendliness ?? ""}</td>
                                             <td>
                                                 <a href="#" class="btn btn-success editKangaroo" data-id=${data[i].id}>edit</a>
                                                 <a href="#" class="btn btn-danger deleteKangaroo" data-id=${data[i].id}>delete</a>
@@ -178,6 +178,9 @@
 
             $('body').on('click', '.deleteKangaroo', function(e) {
                 e.preventDefault();
+                if (!confirm("Are you sure you want to delete this kangaroo?")) {
+                    return;
+                }
                 let btn = $(this);
                 let id = btn.data('id');
                 
@@ -209,7 +212,6 @@
                     url: '/api/kangaroo-info/' + id,
                     method: 'GET',
                     success: function(res){
-                        console.log(res.data);
                         let data = res.data;
                         $('#kangarooId').val(id);
                         $('#name').val(data.name);
@@ -248,19 +250,13 @@
                         success: function(res){
                             if (res) {
                                 alert(res.message);
-                                let row = `<tr>
-                                            <td>${id}</td>
-                                            <td>${data.name}</td>
-                                            <td>${data.birthday}</td>
-                                            <td>${data.weight}</td>
-                                            <td>${data.height}</td>
-                                            <td>${data.friendliness ?? ""}</td>
-                                            <td>
-                                                <a href="#" class="btn btn-success editKangaroo" data-id=${id}>edit</a>
-                                                <a href="#" class="btn btn-danger deleteKangaroo" data-id=${id}>delete</a>
-                                            </td>
-                                        </tr>`;
-                                // btn.closest("tr").replaceWith(row);
+
+                                $('#tr_' + id).find('.td_name').text(data.name);
+                                $('#tr_' + id).find('.td_birthday').text(data.birthday);
+                                $('#tr_' + id).find('.td_weight').text(data.weight);
+                                $('#tr_' + id).find('.td_height').text(data.height);
+                                $('#tr_' + id).find('.td_friendliness').text(data.friendliness);
+
                                 $('.inputForm').val('');
                                 $('.ajaxModal').modal('hide');
                             }
@@ -285,13 +281,13 @@
                         success: function(res){
                             alert(res.message);
                             let table = $('#kangarooTable');
-                            let row = `<tr>
-                                            <td>${res.id}</td>
-                                            <td>${data.name}</td>
-                                            <td>${data.birthday}</td>
-                                            <td>${data.weight}</td>
-                                            <td>${data.height}</td>
-                                            <td>${data.friendliness ?? ""}</td>
+                            let row = `<tr id="${'tr_' + res.id}">
+                                            <td class="td_id">${res.id}</td>
+                                            <td class="td_name">${data.name}</td>
+                                            <td class="td_birthday">${data.birthday}</td>
+                                            <td class="td_weight">${data.weight}</td>
+                                            <td class="td_height">${data.height}</td>
+                                            <td class="td_friendliness">${data.friendliness ?? ""}</td>
                                             <td>
                                                 <a href="#" class="btn btn-success editKangaroo" data-id=${res.id}>edit</a>
                                                 <a href="#" class="btn btn-danger deleteKangaroo" data-id=${res.id}>delete</a>
