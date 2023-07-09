@@ -26,15 +26,15 @@ class KangarooStoreRequest extends FormRequest
         return [
             'name' => [ 
                 'required', 
-                'alpha',
+                'regex:/^([^0-9]*)$/',
                 'max:50', 
                 Rule::unique('t_kangaroo_info')->ignore($this->id, 'id'),
             ],
-            'nickname' => 'nullable|alpha|max:25',
+            'nickname' => 'nullable|regex:/^([^0-9]*)$/|max:25',
             'weight' => 'required|numeric|gt:0',
             'height' => 'required|numeric|gt:0',
             'gender' => 'required|in:male,female',
-            'color' => 'nullable|alpha|max:15',
+            'color' => 'nullable|regex:/^([^0-9]*)$/|max:15',
             'friendliness' => 'nullable|in:friendly,not friendly',
             'birthday' => 'required|date|before:tomorrow',
         ];

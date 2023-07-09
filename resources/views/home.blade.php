@@ -20,6 +20,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+            <input type="hidden" name="kangarooId" id="kangarooId">
             <div class="form-group mb-3">
                 <label for="">Name</label>
                 <input type="text" id="name" class="form-control inputForm">
@@ -78,8 +79,8 @@
             
         </div>
         <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="saveBtn">save</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="saveBtn">save</button>
         </div>
     </div>
     </div>
@@ -89,7 +90,7 @@
 
     <div class="row">
         <div class="col-md-6 offset-3" style="margin-top: 100px">
-            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add kangaroo</a>
+            <a class="btn btn-primary" id="addKangaroo">Add kangaroo</a>
             <a class="btn btn-info" href="/data-grid">View DataGrid</a>
         </div>
         <div class="col-md-6 offset-3" style="margin-top: 20px">
@@ -120,8 +121,6 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            
-
             function buildTable() {
                 $.ajax({
                     url: '/api/kangaroo-info',
@@ -131,7 +130,7 @@
                         let data = res.data;
 
                         for (let i = 0; i < data.length; i++) {
-                            let row = `<tr id=${data[i].id}>
+                            let row = `<tr>
                                             <td>${data[i].id}</td>
                                             <td>${data[i].name}</td>
                                             <td>${data[i].birthday}</td>
@@ -148,12 +147,34 @@
                         }
                     },
                     error: function(res){
-                        alert('something went wrong');
+                        alert('something went wrong while retrieving data');
                         console.log(res.responseJSON);
+                        location.reload();
                     }
                 });
             }
             buildTable();
+
+            function getFormValues() {
+                return {
+                    name : $('#name').val(),
+                    nickname : $('#nickname').val(),
+                    weight : $('#weight').val(),
+                    height : $('#height').val(),
+                    gender : $('#gender').val(),
+                    color : $('#color').val(),
+                    friendliness : $('#friendliness').val(),
+                    birthday : $('#birthday').val()
+                };
+            }
+
+            $('#addKangaroo').click(function() {
+                $('.ajaxModal').modal('show');
+                $('#modal-title').text('Create Kangaroo Info');
+                $('#saveBtn').text('Create');
+                $('.inputForm').val('');
+                $('#kangarooId').val('');
+            });
 
             $('body').on('click', '.deleteKangaroo', function(e) {
                 e.preventDefault();
@@ -171,66 +192,130 @@
                         }
                     },
                     error: function(res){
-                        alert('something went wrong');
+                        alert('something went wrong while deleting info');
                         console.log(res.responseJSON);
+                        location.reload();
                     }
                 });
-            })
+            });
 
-            function deleteKangaroo(data) {
-                console.log(data.attr('data-id'));
-            }
+            $('body').on('click', '.editKangaroo', function(e) {
+                e.preventDefault();
+                let btn = $(this);
+                let id = btn.data('id');
 
-            $('#modal-title').text('Create Kangaroo');
-            $('#saveBtn').text('Save Kangaroo');
+
+                $.ajax({
+                    url: '/api/kangaroo-info/' + id,
+                    method: 'GET',
+                    success: function(res){
+                        console.log(res.data);
+                        let data = res.data;
+                        $('#kangarooId').val(id);
+                        $('#name').val(data.name);
+                        $('#nickname').val(data.nickname);
+                        $('#weight').val(data.weight);
+                        $('#height').val(data.height);
+                        $('#gender').val(data.gender);
+                        $('#color').val(data.color);
+                        $('#friendliness').val(data.friendliness);
+                        $('#birthday').val(data.birthday);
+                        $('#modal-title').text('Update Kangaroo Info');
+                        $('#saveBtn').text('Update');
+                        $('.ajaxModal').modal('show');
+                    
+                    },
+                    error: function(res){
+                        alert('something went wrong while getting info');
+                        console.log(res.responseJSON);
+                        location.reload();
+                        
+                    }
+                });
+                
+            });
+
             $('#saveBtn').click(function() {
                 $('.spanMsg').text('');
 
-                let data = {
-                    name : $('#name').val(),
-                    nickname : $('#nickname').val(),
-                    weight : $('#weight').val(),
-                    height : $('#height').val(),
-                    gender : $('#gender').val(),
-                    color : $('#color').val(),
-                    friendliness : $('#friendliness').val(),
-                    birthday : $('#birthday').val()
-                };
-
-                $.ajax({
-                    url: '/api/kangaroo-info',
-                    method: 'POST',
-                    data: data,
-                    success: function(res){
-                        alert(res.message);
-                        let table = $('#kangarooTable');
-                        let row = `<tr id=${res.id}>
-                                        <td>${res.id}</td>
-                                        <td>${data.name}</td>
-                                        <td>${data.birthday}</td>
-                                        <td>${data.weight}</td>
-                                        <td>${data.height}</td>
-                                        <td>${data.friendliness ?? ""}</td>
-                                        <td>
-                                            <a href="#" class="btn btn-success editKangaroo" data-id=${res.id}>edit</a>
-                                            <a href="#" class="btn btn-danger deleteKangaroo" data-id=${res.id}>delete</a>
-                                        </td>
-                                    </tr>`;
-
-                        table.append(row);
-                        $('.inputForm').val('');
-                        $('.ajaxModal').modal('toggle');
-                    },
-                    error: function(res){
-                        if (res.status === 422) {
-                            Object.keys(res.responseJSON.errors).forEach(function(key) {
-                                $('#' + key + 'Msg').text(res.responseJSON.errors[key]);
-                            });
+                let data = getFormValues();
+                let id = $('#kangarooId').val();
+                if (id !== '') {
+                    $.ajax({
+                        url: '/api/kangaroo-info/' + id,
+                        method: 'PUT',
+                        data: data,
+                        success: function(res){
+                            if (res) {
+                                alert(res.message);
+                                let row = `<tr>
+                                            <td>${id}</td>
+                                            <td>${data.name}</td>
+                                            <td>${data.birthday}</td>
+                                            <td>${data.weight}</td>
+                                            <td>${data.height}</td>
+                                            <td>${data.friendliness ?? ""}</td>
+                                            <td>
+                                                <a href="#" class="btn btn-success editKangaroo" data-id=${id}>edit</a>
+                                                <a href="#" class="btn btn-danger deleteKangaroo" data-id=${id}>delete</a>
+                                            </td>
+                                        </tr>`;
+                                // btn.closest("tr").replaceWith(row);
+                                $('.inputForm').val('');
+                                $('.ajaxModal').modal('hide');
+                            }
+                        },
+                        error: function(res){
+                            if (res.status === 422) {
+                                Object.keys(res.responseJSON.errors).forEach(function(key) {
+                                    $('#' + key + 'Msg').text(res.responseJSON.errors[key]);
+                                });
+                            } else {
+                                alert('something went wrong while updating the info');
+                                console.log(res.responseJSON);
+                                location.reload();
+                            }
                         }
-                        alert('something went wrong');
-                        console.log(res.responseJSON);
-                    }
-                });
+                    });
+                } else {
+                    $.ajax({
+                        url: '/api/kangaroo-info',
+                        method: 'POST',
+                        data: data,
+                        success: function(res){
+                            alert(res.message);
+                            let table = $('#kangarooTable');
+                            let row = `<tr>
+                                            <td>${res.id}</td>
+                                            <td>${data.name}</td>
+                                            <td>${data.birthday}</td>
+                                            <td>${data.weight}</td>
+                                            <td>${data.height}</td>
+                                            <td>${data.friendliness ?? ""}</td>
+                                            <td>
+                                                <a href="#" class="btn btn-success editKangaroo" data-id=${res.id}>edit</a>
+                                                <a href="#" class="btn btn-danger deleteKangaroo" data-id=${res.id}>delete</a>
+                                            </td>
+                                        </tr>`;
+
+                            table.append(row);
+                            $('.inputForm').val('');
+                            $('.ajaxModal').modal('hide');
+                        },
+                        error: function(res){
+                            if (res.status === 422) {
+                                Object.keys(res.responseJSON.errors).forEach(function(key) {
+                                    $('#' + key + 'Msg').text(res.responseJSON.errors[key]);
+                                });
+                            } else {
+                                alert('something went wrong while creating the info');
+                                console.log(res.responseJSON);
+                                location.reload();
+                            }
+                            
+                        }
+                    });
+                }
             });
        
         });
