@@ -130,7 +130,7 @@
                         let data = res.data;
 
                         for (let i = 0; i < data.length; i++) {
-                            let row = `<tr>
+                            let row = `<tr id=${data[i].id}>
                                             <td>${data[i].id}</td>
                                             <td>${data[i].name}</td>
                                             <td>${data[i].birthday}</td>
@@ -145,11 +145,9 @@
 
                             table.append(row);
                         }
-                        
-                    
-                        console.log(res.data);
                     },
                     error: function(res){
+                        alert('something went wrong');
                         console.log(res.responseJSON);
                     }
                 });
@@ -160,9 +158,7 @@
             $('#saveBtn').text('Save Kangaroo');
             $('#saveBtn').click(function() {
                 $('.spanMsg').text('');
-                if (isNaN($('#weight').val())) {
-                    console.log('hahaha');
-                }
+
                 let data = {
                     name : $('#name').val(),
                     nickname : $('#nickname').val(),
@@ -189,6 +185,8 @@
                                 $('#' + key + 'Msg').text(res.responseJSON.errors[key]);
                             });
                         }
+                        alert('something went wrong');
+                        console.log(res.responseJSON);
                     }
                 });
             });
