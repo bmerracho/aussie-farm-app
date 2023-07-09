@@ -18,7 +18,8 @@ To install dependencies run the command
 composer install
 ```
 
-Run your MySQL Server then migrate and seed the db
+To Setup Database and populate it with data
+Run your MySQL Server then excecute this command
 ```bash
 php artisan migrate:fresh --seed --seeder=KangarooInfoSeeder
 ```
