@@ -17,8 +17,9 @@ class KangarooInfoService
     public function createKangarooInfo(array $aData): Response
     {
         try {
-            $this->oKangarooInfoRepository->insertKangarooInfo($aData);
+            $aResponse = $this->oKangarooInfoRepository->insertKangarooInfo($aData);
             return response([
+                'id' => $aResponse['id'],
                 'message' => 'successfully created kangaroo info.'
             ], 201);
         } catch(QueryException $e) {
@@ -26,7 +27,7 @@ class KangarooInfoService
         }
     }
 
-    public function getKangarooInfo($iOffset, $iLimit)
+    public function getKangarooInfo()
     {
         try {
             $aKangarooInfo = $this->oKangarooInfoRepository->readKangarooInfo();

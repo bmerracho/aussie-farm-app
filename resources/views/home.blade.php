@@ -105,7 +105,7 @@
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="kangarooTable">
                     
                 </tbody>
             </table>
@@ -120,6 +120,41 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+            
+            function buildTable() {
+                $.ajax({
+                    url: '/api/kangaroo-info',
+                    method: 'GET',
+                    success: function(res){
+                        let table = $('#kangarooTable');
+                        let data = res.data;
+
+                        for (let i = 0; i < data.length; i++) {
+                            let row = `<tr>
+                                            <td>${data[i].id}</td>
+                                            <td>${data[i].name}</td>
+                                            <td>${data[i].birthday}</td>
+                                            <td>${data[i].weight}</td>
+                                            <td>${data[i].height}</td>
+                                            <td>${data[i].friendliness ?? ""}</td>
+                                            <td>
+                                                <a href="" class="btn btn-success">edit</a>
+                                                <a href="" class="btn btn-danger">delete</a>
+                                            </td>
+                                        </tr>`;
+
+                            table.append(row);
+                        }
+                        
+                    
+                        console.log(res.data);
+                    },
+                    error: function(res){
+                        console.log(res.responseJSON);
+                    }
+                });
+            }
+            buildTable();
 
             $('#modal-title').text('Create Kangaroo');
             $('#saveBtn').text('Save Kangaroo');

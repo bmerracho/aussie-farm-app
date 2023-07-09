@@ -15,6 +15,7 @@ class KangarooInfoRepository
 
     public function insertKangarooInfo($aData)
     {
+        
         return $this->oKangarooInfoModel->create($aData);
     }
 
