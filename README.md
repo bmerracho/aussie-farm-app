@@ -13,7 +13,7 @@ Clone the repo and install the dependencies.
 git clone https://github.com/bmerracho/aussie-farm-app.git
 cd aussie-farm-app
 ```
-
+To install dependencies run the command
 ```bash
 composer install
 ```
